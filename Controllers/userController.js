@@ -13,6 +13,10 @@ function login(req,res)
     {
         validators+="Password is required"
     }
+    if(req.body.name=='' || req.body.name==undefined)
+    {
+        validators+="name is required"
+    }
     if(!!validators)
     {
         res.json({
@@ -21,51 +25,52 @@ function login(req,res)
             "message":validators
         })
     }
-    User.findOne({'email':req.body.email}).exec()
-    .then(userobj=>{
-        if(userobj==null)
-        {
-            res.json({
-                "status":200,
-                "success":false,
-                "message":"Email does not exist"
-            })
-        }
-        else{
-            if(bcrypt.compareSync(req.body.password,userobj.password))
+    else{
+        User.findOne({'email':req.body.email}).exec()
+        .then(userobj=>{
+            if(userobj==null)
             {
-                let payload={
-                    '_id':userobj._id,
-                    'userType':userobj.userType,
-                    'email':userobj.email
-                }
-                const token=jwt.sign(payload,secretkey,{expiresIn:60*10})
-                res.json({
-                    "status":200,
-                    "success":true,
-                    "message":"Login Successfully",
-                    "data":userobj,
-                    "token":token
-                })
-            }
-            else{
                 res.json({
                     "status":200,
                     "success":false,
-                    "message":"Invalid Password"
+                    "message":"Email does not exist"
                 })
             }
-        }
-    })
-    .catch(err=>{
-        res.json({
-            "status":500,
-            "success":false,
-            "message":String(err)
+            else{      
+                if(bcrypt.compareSync(req.body.password,userobj.password))
+                {
+                    let payload={
+                        '_id':userobj._id,
+                        'userType':userobj.userType,
+                        'email':userobj.email
+                    }
+                    const token=jwt.sign(payload,secretkey,{expiresIn:60*10})
+                    res.json({
+                        "status":200,
+                        "success":true,
+                        "message":"Login Successfully",
+                        "data":userobj,
+                        "token":token
+                    })
+                }
+                else{
+                    res.json({
+                        "status":200,
+                        "success":false,
+                        "message":"Invalid Password"
+                    })
+                }
+            }
         })
-    })
+        .catch(err=>{
+            res.json({
+                "status":500,
+                "success":false,
+                "message":String(err)
+            })
+        })
+    }  
 }
-
 module.exports={
     login
 }
