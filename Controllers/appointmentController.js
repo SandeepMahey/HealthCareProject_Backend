@@ -3,18 +3,11 @@ const Appointment=require('../Models/appointmentModel')
 function addappointment(req,res)
 {
     var validations=''
-    if(req.body.patientId=='' || req.body.patientId==undefined)
+    if(req.body.email=='' || req.body.email==undefined)
     {
-        validations+="patientId is required"
+        validations+="email is required"
     }
-    if(req.body.doctorId=='' || req.body.doctorId==undefined)
-    {
-        validations+="doctorId is required"
-    }
-    if(req.body.hospitalId=='' || req.body.hospitalId==undefined)
-    {
-        validations+="hospital_id is required"
-    }
+   
     if(req.body.booking_date=='' || req.body.booking_date==undefined)
     {
         validations+="booking_date is required"
@@ -23,6 +16,19 @@ function addappointment(req,res)
     {
         validations+="booking_time is required"
     }
+    if(req.body.patient_name=='' || req.body.patient_name==undefined)
+    {
+        validations+="patient_name is required"
+    }
+    if(req.body.contact_number=='' || req.body.contact_number==undefined)
+    {
+        validations+="contact_number is required"
+    }
+    if(req.body.gender=='' || req.body.gender==undefined)
+    {
+        validations+="gender is required"
+    }
+    
     if(!!validations)
     {
         res.json({
@@ -33,14 +39,16 @@ function addappointment(req,res)
     }
     else{
                 //Insert
-                var appointmentcount=Appointment.countDocuments.exec()
                 let appointmentobj=new Appointment()
-                appointmentobj.sno=appointmentcount+1
-                appointmentobj.patientId=req.body.patientId
-                appointmentobj.doctorId=req.body.doctorId
-                appointmentobj.hospitalId=req.body.hospitalId
+                appointmentobj.email=req.body.email
+                appointmentobj.doctorId=req.body.doctor_name
+                appointmentobj.specialization=req.body.specialization
                 appointmentobj.booking_date=req.body.booking_date
                 appointmentobj.booking_time=req.body.booking_time
+                appointmentobj.booking_status=req.body.booking_status
+                appointmentobj.patient_name=req.body.patient_name
+                appointmentobj.contact_number=req.body.contact_number
+                appointmentobj.gender=req.body.gender
                 appointmentobj.save()
                 res.json({
                     "status":200,
@@ -52,7 +60,7 @@ function addappointment(req,res)
 }
 function viewappointment(req,res)
 {
-    Appointment.find(req.body).exec()
+    Appointment.find(req.body).populate('doctorId').exec()
     .then(data=>{
         res.json({
             "status":200,

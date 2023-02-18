@@ -2,7 +2,6 @@ const mongo=require('mongoose')
 
 const hospitalSchema=mongo.Schema({
     'cityId':{type:mongo.Schema.Types.ObjectId,ref:'city',default:''},
-    'sno':{type:Number,default:1},
     'hospital_name':{type:String,default:''},
     'specialization':{type:String,default:''},
     'pincode':{type:Number,default:0},

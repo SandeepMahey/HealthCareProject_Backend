@@ -125,6 +125,7 @@ function tempdelcity(req,res)
             }
             else{
                 cityobj.isStatus=false
+                cityobj.isBlocked=true
                 cityobj.save()
                 res.json({
                     "status":200,

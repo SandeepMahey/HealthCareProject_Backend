@@ -3,39 +3,41 @@ const bcrypt=require('bcrypt')
 const saltRounds=10
 
 function adddoctor(req,res){
+    console.log(req.body)
     var validations=''
     if(req.body.doctor_name=='' || req.body.doctor_name==undefined)
     {
-        validations+="doctor_name is required"
+        validations+="doctor_name is required\n"
     }
     if(req.body.qualification=='' || req.body.qualification==undefined)
     {
-        validations+="qualification is required"
+        validations+="qualification is required\n"
     }
     if(req.body.specialization=='' || req.body.specialization==undefined)
     {
-        validations+="specialization is required"
+        validations+="specialization is required\n"
     }
     if(req.body.experience=='' || req.body.experience==undefined)
     {
-        validations+="experience is required"
+        validations+="experience is required\n"
     }
     if(req.body.email=='' || req.body.email==undefined)
     {
-        validations+="email is required"
+        validations+="email is required\n"
     }
     if(req.body.password=='' || req.body.password==undefined)
     {
-        validations+="password is required"
+        validations+="password is required\n"
     }
     if(req.body.contact_number=='' || req.body.contact_number==undefined)
     {
-        validations+="contact number is required"
+        validations+="contact number is required\n"
     }
     if(req.body.address=='' || req.body.address==undefined)
     {
-        validations+="address is required"
+        validations+="address is required\n"
     }
+    
     if(!!validations)
     {
         res.json({
@@ -56,14 +58,14 @@ function adddoctor(req,res){
                 {
                     doctorobj.profile=req.file.filename
                 }
-                doctorobj.qualfication=req.body.qualfication
+                doctorobj.qualification=req.body.qualification
                 doctorobj.specialization=req.body.specialization
                 doctorobj.experience=req.body.experience
                 doctorobj.email=req.body.email
                 doctorobj.password=bcrypt.hashSync(req.body.password,saltRounds)
                 doctorobj.contact_number=req.body.contact_number
                 doctorobj.address=req.body.address
-                doctorobj.hospitalId=req.body.hospitalId
+                doctorobj.hospitalId=req.body.hospital_name
                 doctorobj.save()
                 res.json({
                     "status":200,
@@ -150,6 +152,7 @@ function viewsingledoctor(req,res)
 }
 function deletedoctor(req,res)
 {
+    console.log(req.body)
     if(req.body._id==null || req.body._id==undefined)
     {
         res.json({
@@ -170,22 +173,23 @@ function deletedoctor(req,res)
                 })
             }
             else{
-                doctorobj.delete({'_id':req.body._id}).exec()
-                .then(doctorobj=>{
-                    res.json({
-                        "status":200,
-                        "success":true,
-                        "message":"Doctor Deleted"
-                    })
-                })
-                .catch(err=>{
-                    res.json({
-                        "status":422,
-                        "success":false,
-                        "message":String(err)
-                    })
+                doctorobj.isStatus=false
+                doctorobj.isBlocked=true
+                doctorobj.hospitalId = doctorobj.hospitalId
+                doctorobj.save()
+                res.json({
+                    "status":200,
+                    "success":true,
+                    "message":"Doctor Deleted"
                 })
             }
+        })
+        .catch(err=>{
+            res.json({
+                "status":500,
+                "success":false,
+                "message":String(err)
+            })
         })
     }
 }
@@ -211,7 +215,19 @@ function updatedoctor(req,res)
                 })
             }
             else{
+                doctorobj.doctor_name=req.body.doctor_name
+                if(req.file)
+                {
+                    doctorobj.profile=req.file.filename
+                }
                 doctorobj.qualification=req.body.qualification
+                doctorobj.specialization=req.body.specialization
+                doctorobj.experience=req.body.experience
+                doctorobj.email=req.body.email
+                doctorobj.password=bcrypt.hashSync(req.body.password,saltRounds)
+                doctorobj.contact_number=req.body.contact_number
+                doctorobj.address=req.body.address
+                doctorobj.hospitalId=req.body.hospital_name
                 doctorobj.save()
                 res.json({
                     "status":200,

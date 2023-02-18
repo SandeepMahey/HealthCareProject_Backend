@@ -4,10 +4,16 @@ var citycontroller=require('../Controllers/cityController')
 var hospitalcontroller=require('../Controllers/hospitalController')
 var doctorcontroller=require('../Controllers/doctorController')
 var appointmentcontroller=require('../Controllers/appointmentController')
+var patientcontroller=require('../Controllers/patientController')
 
 //admin routes start
 Router.post('/login',usercontroller.login)
 //admin routes end
+//Appointment Routes Start//
+Router.post('/viewappointment',appointmentcontroller.viewappointment)
+//Apointmnet Routes End//
+
+Router.use(require('../common/adminMiddleware'))
 
 //city routes start//
 Router.post('/addcity',citycontroller.addcity)
@@ -36,7 +42,7 @@ const hospitalstorage = multer.diskStorage({
 Router.post('/addhospital',hospitalupload.single("image"),hospitalcontroller.addhospital)
 Router.post('/viewallhospital',hospitalcontroller.viewallhospital)
 Router.post('/viewsinglehospital',hospitalcontroller.viewsinglehospital)
-Router.post('/deletehospital',hospitalcontroller.deletehospital)
+Router.post('/tempdelhospital',hospitalcontroller.tempdelhospital)
 Router.post('/updatehospital',hospitalupload.single("image"),hospitalcontroller.updatehospital)
 //hospital routes end//
 
@@ -59,12 +65,12 @@ Router.post('/adddoctor',doctorupload.single("profile"),doctorcontroller.adddoct
 Router.post('/viewalldoctor',doctorcontroller.viewalldoctor)
 Router.post('/viewsingledoctor',doctorcontroller.viewsingledoctor)
 Router.post('/deletedoctor',doctorupload.single("profile"),doctorcontroller.deletedoctor)
-Router.post('/updatedoctor',doctorcontroller.updatedoctor)
+Router.post('/updatedoctor',doctorupload.single("profile"),doctorcontroller.updatedoctor)
 //doctor routes end//
 
-//Appointment Routes Start//
-Router.post('/viewappointment',appointmentcontroller.viewappointment)
-//Apointmnet Routes End//
+
+
+Router.post('/viewallpatient',patientcontroller.viewallpatient)
 
 module.exports=Router
 

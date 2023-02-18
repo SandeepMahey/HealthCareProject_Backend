@@ -1,13 +1,15 @@
 const mongo=require('mongoose')
 
 const appointmentSchema=mongo.Schema({
-    'sno':{type:Number,default:1},
-    'patientId':{type:mongo.Schema.Types.ObjectId,ref:'patient',default:''},
+    'email':{type:String,default:''},
     'doctorId':{type:mongo.Schema.Types.ObjectId,ref:'doctor',default:''},
-    'hospitalId':{type:mongo.Schema.Types.ObjectId,ref:'hospital',default:''},
+    'specialization':{type:String,default:''},
     'booking_date':{type:String,default:''},
     'booking_time':{type:String,default:''},
     'booking_status':{type:String,default:'Pending'},
+    'patient_name':{type:String,default:''},
+    'contact_number':{type:Number,default:''},
+    'gender':{type:String,default:''},    
     'isStatus':{type:Boolean,default:true},
     'isBlocked':{type:Boolean,default:false},
     'created_at':{type:Date,default:Date.now()},

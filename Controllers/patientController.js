@@ -52,12 +52,11 @@ function register(req,res)
             if(data==null)
             {
                 let userobj=new User()
-                userobj.name=req.body.name
                 userobj.email=req.body.email
                 userobj.password=bcrypt.hashSync(req.body.password,saltRounds)
                 userobj.userType=1
                 userobj.save()
-                .then(async userobj=>{
+                .then(userobj=>{
                     let patientobj=new Patient()
                     patientobj.userId=userobj._id
                     patientobj.patient_name=req.body.patient_name
@@ -69,6 +68,11 @@ function register(req,res)
                     patientobj.password=req.body.password
                     patientobj.contact_number=req.body.contact_number
                     patientobj.save()
+                    res.json({
+                        "status":200,
+                        "success":true,
+                        "message":"Patient Registered"
+                    })
                 })
                 .catch(err=>{
                     res.json({
@@ -121,7 +125,7 @@ function login(req,res)
             {
                 res.json({
                     "status":200,
-                    "success":true,
+                    "success":false,
                     "message":"Email does not exist"
                 })
             }
@@ -297,13 +301,76 @@ function resetpassword(req,res)
             "message":"New and Confirm Password does not match"
         })
     }
-
 }
+function viewallpatient(req,res)
+{
+    console.log(req.body)
+    Patient.find(req.body).populate('userId').exec()
+    .then(patientobj=>{
+        res.json({
+            "status":200,
+            "success":true,
+            "message":"Patient data Loaded",
+            "data":patientobj
+        })
+    })
+    .catch(err=>{
+        res.json({
+            "status":500,
+            "success":false,
+            "message":String(err)
+        })
+    })
+}
+function viewsinglepatient(req,res)
+{
+    if(req.body._id==null || req.body._id==undefined)
+    {
+        res.json({
+            "status":422,
+            "success":false,
+            "message":"_id is required"
+        })
+    }
+    else{
+        Patient.findOne({'_id':req.body._id}).populate('userId').exec()
+        .then(patientobj=>{
+            if(patientobj!=null)
+            {
+                res.json({
+                    "status":200,
+                    "success":true,
+                    "message":"Patient Data Loaded",
+                    "data":patientobj
+                })
+            }
+            else{
+                res.json({
+                    "status":200,
+                    "success":true,
+                    "message":"Patient Data Loaded",
+                    "data":[]
+                })
+            }
+            
+        })
+        .catch(err=>{
+            res.json({
+                "status":500,
+                "success":false,
+                "message":String(err)
+            })
+        })
+    }
+}
+
 module.exports={
     register,
     login,
     changepassword,
-    resetpassword
+    resetpassword,
+    viewallpatient,
+    viewsinglepatient
 }
 
 

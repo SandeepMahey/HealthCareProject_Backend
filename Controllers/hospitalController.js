@@ -1,25 +1,35 @@
 const Hospital=require('../Models/hospitalModel')
-const City=require('../Models/cityModel')
+const User=require('../Models/userModel')
+const bcrypt=require('bcrypt')
+const saltRounds=10
+const jwt=require('jsonwebtoken')
+const secretkey='nodeproject@abc'
 
 function addhospital(req,res)
 {
+    console.log(req.body)
     var validations=''
     if(req.body.hospital_name=='' || req.body.hospital_name==undefined)
     {
-        validations+='hospital_name is required'
+        validations+='hospital_name is required\n'
     }
     if(req.body.specialization=='' || req.body.specialization==undefined)
     {
-        validations+='specialization is required'
+        validations+='specialization is required\n'
     }
     if(req.body.pincode=='' || req.body.pincode==undefined)
     {
-        validations+='pincode is required'
+        validations+='pincode is required\n'
     }
     if(req.body.address=='' || req.body.address==undefined)
     {
         validations+='address is required'
     }
+    if(req.body.city_name=='' || req.body.city_name==undefined)
+    {
+        validations+='city_name is required\n'
+    }
+    
     if(!!validations)
     {
         res.json({
@@ -33,9 +43,7 @@ function addhospital(req,res)
         .then(data=>{
             if(data == null)
             {
-                var hospitalcount=Hospital.countDocuments.exec()
                 let hospitalobj=new Hospital()
-                hospitalobj.sno=hospitalcount+1
                 hospitalobj.hospital_name=req.body.hospital_name
                 if(req.file)
                 {
@@ -44,12 +52,12 @@ function addhospital(req,res)
                 hospitalobj.specialization=req.body.specialization
                 hospitalobj.pincode=req.body.pincode
                 hospitalobj.address=req.body.address
-                hospitalobj.cityId=req.body.cityId
+                hospitalobj.cityId=req.body.city_name
                 hospitalobj.save()
                 res.json({
                     "status":200,
                     "success":true,
-                    "message":"Hopsital Added"
+                    "message":"Hospital Added"
                 })
             }
             else{
@@ -129,7 +137,7 @@ function viewsinglehospital(req,res)
         })
     }
 }
-function deletehospital(req,res)
+function tempdelhospital(req,res)
 {
     if(req.body._id==null || req.body._id==undefined)
     {
@@ -151,22 +159,24 @@ function deletehospital(req,res)
                 })
             }
             else{
-                hospitalobj.delete({'_id':req.body._id}).exec()
-                .then(hospitalobj=>{
-                    res.json({
-                        "status":200,
-                        "success":true,
-                        "message":"Hospital Deleted"
-                    })
-                })
-                .catch(err=>{
-                    res.json({
-                        "status":422,
-                        "success":false,
-                        "message":String(err)
-                    })
+                hospitalobj.isStatus=false
+                hospitalobj.isBlocked=true
+                hospitalobj.cityId = hospitalobj.cityId
+                
+                hospitalobj.save()
+                res.json({
+                    "status":200,
+                    "success":true,
+                    "message":"Hospital Deleted"
                 })
             }
+        })
+        .catch(err=>{
+            res.json({
+                "status":500,
+                "success":false,
+                "message":String(err)
+            })
         })
     }
 }
@@ -193,6 +203,7 @@ function updatehospital(req,res)
                 })
             }
             else{
+                hospitalobj.cityId=req.body.city_name
                 hospitalobj.hospital_name=req.body.hospital_name
                 hospitalobj.pincode=req.body.pincode
                 hospitalobj.address=req.body.address
@@ -223,7 +234,7 @@ module.exports={
     addhospital,
     viewallhospital,
     viewsinglehospital,
-    deletehospital,
+    tempdelhospital,
     updatehospital
 }
 

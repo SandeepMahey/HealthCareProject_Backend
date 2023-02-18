@@ -13,10 +13,6 @@ function login(req,res)
     {
         validators+="Password is required"
     }
-    if(req.body.name=='' || req.body.name==undefined)
-    {
-        validators+="name is required"
-    }
     if(!!validators)
     {
         res.json({
@@ -44,7 +40,7 @@ function login(req,res)
                         'userType':userobj.userType,
                         'email':userobj.email
                     }
-                    const token=jwt.sign(payload,secretkey,{expiresIn:60*10})
+                    const token=jwt.sign(payload,secretkey,{expiresIn:60*20})
                     res.json({
                         "status":200,
                         "success":true,
